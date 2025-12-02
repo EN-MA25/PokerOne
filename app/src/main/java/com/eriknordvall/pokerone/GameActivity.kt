@@ -4,16 +4,20 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.marginTop
 
 class GameActivity : AppCompatActivity() {
 
     var cardSelected : BooleanArray = booleanArrayOf(false, false, false, false, false)
+    var deck: Deck = Deck()
+    lateinit var card1: ImageView
+    lateinit var card2: ImageView
+    lateinit var card3: ImageView
+    lateinit var card4: ImageView
+    lateinit var card5: ImageView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +29,27 @@ class GameActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }*/
+        deck.logOrder()
+        card1 = findViewById(R.id.card1)
+        card2 = findViewById(R.id.card2)
+        card3 = findViewById(R.id.card3)
+        card4 = findViewById(R.id.card4)
+        card5 = findViewById(R.id.card5)
+
+        val id1 = getResources().getIdentifier(deck.cards[0].imageText(), "drawable", getPackageName())
+        val id2 = getResources().getIdentifier(deck.cards[1].imageText(), "drawable", getPackageName())
+        val id3 = getResources().getIdentifier(deck.cards[2].imageText(), "drawable", getPackageName())
+        val id4 = getResources().getIdentifier(deck.cards[3].imageText(), "drawable", getPackageName())
+        val id5 = getResources().getIdentifier(deck.cards[4].imageText(), "drawable", getPackageName())
+        card1.setImageResource(id1)
+        card2.setImageResource(id2)
+        card3.setImageResource(id3)
+        card4.setImageResource(id4)
+        card5.setImageResource(id5)
+
+
+
+
     }
 
     fun cardPressed(card: View) {
