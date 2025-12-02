@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">PokerOne</string>
     <string name="play_game">Play Game</string>
+    <string name="happy_with_my_cards">I’m happy with my cards</string>
+    <string name="card_1">Card 1</string>
+    <string name="card_2">Card 2</string>
+    <string name="card_3">Card 3</string>
+    <string name="card_4">Card 4</string>
+    <string name="card_5">Card 5</string>
 </resources>
