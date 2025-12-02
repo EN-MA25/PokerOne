@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.marginBottom
 import androidx.core.view.marginTop
@@ -17,6 +18,7 @@ class GameActivity : AppCompatActivity() {
     lateinit var continueButton: Button
     lateinit var currentCards : Array<Card>
     lateinit var imageViews : Array<ImageView>
+    lateinit var handTextView : TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +35,7 @@ class GameActivity : AppCompatActivity() {
         deck.logOrder()
 
         continueButton = findViewById(R.id.continueButton)
+        handTextView = findViewById(R.id.handTextView)
 
         val cardImageView1 = findViewById<ImageView>(R.id.card1)
         val cardImageView2 = findViewById<ImageView>(R.id.card2)
@@ -53,6 +56,14 @@ class GameActivity : AppCompatActivity() {
             imageViews[i].setImageResource(resId)
         }
 
+        setHandTextViewText()
+
+    }
+
+    fun setHandTextViewText() {
+        val handValue = checkCurrentHand()
+        val hand = handValueToString(handValue)
+        handTextView.text = "You got ${hand}\nChoose the cards\nyou would like to switch"
     }
 
     fun cardPressed(imageView: View) {
@@ -93,13 +104,82 @@ class GameActivity : AppCompatActivity() {
             }
         }
         continueButton.text = getString(R.string.happy_with_my_cards)
+        setHandTextViewText()
     }
 
     fun getResIdFromString(string: String) : Int {
-        return getResources().getIdentifier(string, "drawable", getPackageName())
+        return getResources().getIdentifier(string, "drawable", packageName)
     }
 
-    /*fun checkCurrentHand() : String {
+    fun checkCurrentHand() : Int {
 
-    }*/
+        var handValue = 0
+
+
+        val valueArray : List<Int> = intArrayOf(currentCards[0].intValue, currentCards[1].intValue, currentCards[2].intValue, currentCards[3].intValue, currentCards[4].intValue).sorted()
+        val valueSet : Set<Int> = valueArray.toSet()
+
+        val suitArray : List<Int> = intArrayOf(currentCards[0].intSuit, currentCards[1].intSuit, currentCards[2].intSuit, currentCards[3].intSuit, currentCards[4].intSuit).sorted()
+        val suitSet : Set<Int> = suitArray.toSet()
+
+        if (valueSet.size == 2) {
+            // Four of a kind or Full House
+            if (valueArray[1] == valueArray[3]) {
+                // Four of a kind
+                handValue = 7
+            } else {
+                // Full House
+                handValue = 6
+            }
+
+        } else if (valueSet.size == 3) {
+            // Three of a kind or 2 pairs
+            if (valueArray[0] == valueArray[2] || valueArray[1] == valueArray[3] || valueArray[2] == valueArray[4]) {
+                // Three of a kind
+                handValue = 3
+            } else {
+                // 2 pairs
+                handValue = 2
+            }
+        } else if (valueSet.size == 4) {
+            // One pair
+            handValue = 1
+        } else if (suitSet.size == 1) {
+            // Flush or strait flush
+            if (valueArray[4]-valueArray[0] == 4) {
+                // Straight flush but not highest
+                handValue = 8
+            } else if (valueArray[0] == 1 && valueArray.sum() == 47) {
+                // Royal straight flush
+                handValue = 9
+            } else {
+                // Flush
+                handValue = 5
+            }
+        } else if (valueArray[4]-valueArray[0] == 4) {
+            // Straight but not highest
+            handValue = 4
+        } else if (valueArray[0] == 1 && valueArray.sum() == 47) {
+            // The highest straight
+            handValue = 4
+        }
+
+        return handValue
+    }
+
+    fun handValueToString(handValue: Int) : String {
+        return when (handValue) {
+            0 -> "High Card"
+            1 -> "a pair"
+            2 -> "2 pairs"
+            3 -> "Three of a kind"
+            4 -> "a Straight"
+            5 -> "a Flush"
+            6 -> "a Full House"
+            7 -> "Four of a kind"
+            8 -> "a Straight Flush"
+            9 -> "a Royal Straight Flush"
+            else -> ""
+        }
+    }
 }

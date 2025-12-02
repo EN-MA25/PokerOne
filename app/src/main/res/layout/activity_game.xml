@@ -103,7 +103,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/handTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="You got a pair.\nChoose the cards\nyou would like to switch"
