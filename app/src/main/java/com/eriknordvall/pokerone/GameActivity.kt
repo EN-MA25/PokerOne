@@ -3,6 +3,7 @@ package com.eriknordvall.pokerone
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.marginBottom
@@ -10,13 +11,12 @@ import androidx.core.view.marginTop
 
 class GameActivity : AppCompatActivity() {
 
-    var cardSelected : BooleanArray = booleanArrayOf(false, false, false, false, false)
+    //var cardsSelected : BooleanArray = booleanArrayOf(false, false, false, false, false)
     var deck: Deck = Deck()
-    lateinit var card1: ImageView
-    lateinit var card2: ImageView
-    lateinit var card3: ImageView
-    lateinit var card4: ImageView
-    lateinit var card5: ImageView
+
+    lateinit var continueButton: Button
+    lateinit var currentCards : Array<Card>
+    lateinit var imageViews : Array<ImageView>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,43 +29,77 @@ class GameActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }*/
+
         deck.logOrder()
-        card1 = findViewById(R.id.card1)
-        card2 = findViewById(R.id.card2)
-        card3 = findViewById(R.id.card3)
-        card4 = findViewById(R.id.card4)
-        card5 = findViewById(R.id.card5)
 
-        val id1 = getResources().getIdentifier(deck.cards[0].imageText(), "drawable", getPackageName())
-        val id2 = getResources().getIdentifier(deck.cards[1].imageText(), "drawable", getPackageName())
-        val id3 = getResources().getIdentifier(deck.cards[2].imageText(), "drawable", getPackageName())
-        val id4 = getResources().getIdentifier(deck.cards[3].imageText(), "drawable", getPackageName())
-        val id5 = getResources().getIdentifier(deck.cards[4].imageText(), "drawable", getPackageName())
-        card1.setImageResource(id1)
-        card2.setImageResource(id2)
-        card3.setImageResource(id3)
-        card4.setImageResource(id4)
-        card5.setImageResource(id5)
+        continueButton = findViewById(R.id.continueButton)
 
+        val cardImageView1 = findViewById<ImageView>(R.id.card1)
+        val cardImageView2 = findViewById<ImageView>(R.id.card2)
+        val cardImageView3 = findViewById<ImageView>(R.id.card3)
+        val cardImageView4 = findViewById<ImageView>(R.id.card4)
+        val cardImageView5 = findViewById<ImageView>(R.id.card5)
+        imageViews = arrayOf(cardImageView1, cardImageView2, cardImageView3, cardImageView4, cardImageView5)
 
+        val currentCard1 = deck.cards.removeFirst()
+        val currentCard2 = deck.cards.removeFirst()
+        val currentCard3 = deck.cards.removeFirst()
+        val currentCard4 = deck.cards.removeFirst()
+        val currentCard5 = deck.cards.removeFirst()
+        currentCards = arrayOf(currentCard1, currentCard2, currentCard3, currentCard4, currentCard5)
 
-
-    }
-
-    fun cardPressed(card: View) {
-        Log.d("!!!", "Card ${card.tag} ${card.top} ${card.bottom}, ${card.paddingTop} ${card.paddingBottom}, ${card.marginTop} ${card.marginBottom}")
-
-        val tag: Int = card.tag.toString().toInt()
-
-        if (cardSelected[tag]) {
-            card.offsetTopAndBottom(64)
-            cardSelected[tag] = false
-        } else {
-            card.offsetTopAndBottom(-64)
-            cardSelected[tag] = true
+        for (i in 0..<currentCards.size) {
+            val resId = getResIdFromString(currentCards[i].imageText())
+            imageViews[i].setImageResource(resId)
         }
 
+    }
 
+    fun cardPressed(imageView: View) {
+        Log.d("!!!", "Card ${imageView.tag} ${imageView.top} ${imageView.bottom}, ${imageView.paddingTop} ${imageView.paddingBottom}, ${imageView.marginTop} ${imageView.marginBottom}")
+
+        val index: Int = imageView.tag.toString().toInt()
+        val card = currentCards[index]
+
+        if (card.selected) {
+            imageView.offsetTopAndBottom(64)
+            card.selected = false
+        } else {
+            imageView.offsetTopAndBottom(-64)
+            card.selected = true
+        }
+
+        var text = getString(R.string.happy_with_my_cards)
+        for (card in currentCards) {
+            if (card.selected) {
+                text = getString(R.string.switch_cards)
+                break
+            }
+        }
+        continueButton.text = text
 
     }
+
+    fun continueButtonPressed(button: View) {
+        for (i in 0..<currentCards.size) {
+            val currentCard = currentCards[i]
+
+            if (currentCard.selected) {
+                val card = deck.cards.removeFirst()
+                val imageView = imageViews[i]
+                imageView.setImageResource(getResIdFromString(card.imageText()))
+                currentCards[i] = card
+                imageView.offsetTopAndBottom(64)
+            }
+        }
+        continueButton.text = getString(R.string.happy_with_my_cards)
+    }
+
+    fun getResIdFromString(string: String) : Int {
+        return getResources().getIdentifier(string, "drawable", getPackageName())
+    }
+
+    /*fun checkCurrentHand() : String {
+
+    }*/
 }

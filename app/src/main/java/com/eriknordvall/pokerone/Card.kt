@@ -1,6 +1,7 @@
 package com.eriknordvall.pokerone
 
-class Card(var intValue: Int, var intSuit: Int) {
+class Card(var intValue: Int, var intSuit: Int, var selected: Boolean) {
+
     val stringValue: String
         get() {
             return when (intValue) {

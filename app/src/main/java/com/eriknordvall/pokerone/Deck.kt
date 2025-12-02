@@ -7,7 +7,7 @@ class Deck {
     init {
         for (cardSuit in 0..3) {
             for (cardValue in 1..13) {
-                cards.add(Card(cardValue, cardSuit))
+                cards.add(Card(cardValue, cardSuit, false))
             }
 
         }
