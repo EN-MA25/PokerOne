@@ -23,7 +23,10 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:layout_height="160dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="32dp"
@@ -40,7 +43,9 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:contentDescription="@string/card_1"
+            android:onClick="cardPressed"
             android:scaleType="fitXY"
+            android:tag="0"
             app:srcCompat="@drawable/card_2c" />
 
         <ImageView
@@ -51,7 +56,9 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:contentDescription="@string/card_2"
+            android:onClick="cardPressed"
             android:scaleType="fitXY"
+            android:tag="1"
             app:srcCompat="@drawable/card_jc" />
 
         <ImageView
@@ -62,7 +69,9 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:contentDescription="@string/card_3"
+            android:onClick="cardPressed"
             android:scaleType="fitXY"
+            android:tag="2"
             app:srcCompat="@drawable/card_kh" />
 
         <ImageView
@@ -73,7 +82,9 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:contentDescription="@string/card_4"
+            android:onClick="cardPressed"
             android:scaleType="fitXY"
+            android:tag="3"
             app:srcCompat="@drawable/card_2s" />
 
         <ImageView
@@ -84,7 +95,9 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:contentDescription="@string/card_5"
+            android:onClick="cardPressed"
             android:scaleType="fitXY"
+            android:tag="4"
             app:srcCompat="@drawable/card_4d" />
     </LinearLayout>
 
