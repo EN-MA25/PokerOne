@@ -7,8 +7,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.marginBottom
-import androidx.core.view.marginTop
 
 class GameActivity : AppCompatActivity() {
 
@@ -16,23 +14,21 @@ class GameActivity : AppCompatActivity() {
     var deck: Deck = Deck()
 
     lateinit var continueButton: Button
-    lateinit var currentCards : Array<Card>
-    lateinit var imageViews : Array<ImageView>
-    lateinit var handTextView : TextView
+    lateinit var currentCards: Array<Card>
+    lateinit var imageViews: Array<ImageView>
+    lateinit var handTextView: TextView
 
+    var numberOfDrawsLeft: Int = 3
+    var happyWithMyCards = true
+    var isPlaying = true
+    var numberOfDraws: Int = 3
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
         setContentView(R.layout.activity_game)
-        /*ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
 
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }*/
-
-        deck.logOrder()
+        numberOfDraws = intent.getIntExtra("numberOfDraws", 3)
+        numberOfDrawsLeft = numberOfDraws
 
         continueButton = findViewById(R.id.continueButton)
         handTextView = findViewById(R.id.handTextView)
@@ -42,7 +38,8 @@ class GameActivity : AppCompatActivity() {
         val cardImageView3 = findViewById<ImageView>(R.id.card3)
         val cardImageView4 = findViewById<ImageView>(R.id.card4)
         val cardImageView5 = findViewById<ImageView>(R.id.card5)
-        imageViews = arrayOf(cardImageView1, cardImageView2, cardImageView3, cardImageView4, cardImageView5)
+        imageViews =
+            arrayOf(cardImageView1, cardImageView2, cardImageView3, cardImageView4, cardImageView5)
 
         val currentCard1 = deck.cards.removeFirst()
         val currentCard2 = deck.cards.removeFirst()
@@ -56,43 +53,59 @@ class GameActivity : AppCompatActivity() {
             imageViews[i].setImageResource(resId)
         }
 
-        setHandTextViewText()
+        setHandTextViewTextWith(getString(R.string.choose_cards))
 
     }
 
-    fun setHandTextViewText() {
+    fun setHandTextViewTextWith(text: String) {
         val handValue = checkCurrentHand()
         val hand = handValueToString(handValue)
-        handTextView.text = "You got ${hand}\nChoose the cards\nyou would like to switch"
+        handTextView.text = "${getString(R.string.you_got, hand)}\n$text"
     }
 
     fun cardPressed(imageView: View) {
-        Log.d("!!!", "Card ${imageView.tag} ${imageView.top} ${imageView.bottom}, ${imageView.paddingTop} ${imageView.paddingBottom}, ${imageView.marginTop} ${imageView.marginBottom}")
 
-        val index: Int = imageView.tag.toString().toInt()
-        val card = currentCards[index]
+        if (isPlaying) {
+            val index: Int = imageView.tag.toString().toInt()
+            val card = currentCards[index]
 
-        if (card.selected) {
-            imageView.offsetTopAndBottom(64)
-            card.selected = false
-        } else {
-            imageView.offsetTopAndBottom(-64)
-            card.selected = true
-        }
-
-        var text = getString(R.string.happy_with_my_cards)
-        for (card in currentCards) {
             if (card.selected) {
-                text = getString(R.string.switch_cards)
-                break
+                imageView.offsetTopAndBottom(64)
+                card.selected = false
+            } else {
+                imageView.offsetTopAndBottom(-64)
+                card.selected = true
             }
+
+            var text = getString(R.string.happy_with_my_cards)
+            happyWithMyCards = true
+            for (card in currentCards) {
+                if (card.selected) {
+                    text = getString(R.string.switch_cards)
+                    happyWithMyCards = false
+                    break
+                }
+            }
+            continueButton.text = text
         }
-        continueButton.text = text
 
     }
 
     fun continueButtonPressed(button: View) {
+        if (isPlaying) {
+            giveMeNewCards()
+        } else {
+            playAgain()
+        }
+    }
+
+    fun giveMeNewCards() {
+        numberOfDrawsLeft--
+        if (happyWithMyCards) {
+            numberOfDrawsLeft = 0
+        }
         for (i in currentCards.indices) {
+
             val currentCard = currentCards[i]
 
             if (currentCard.selected) {
@@ -105,24 +118,64 @@ class GameActivity : AppCompatActivity() {
                 imageView.offsetTopAndBottom(64)
             }
         }
-        continueButton.text = getString(R.string.happy_with_my_cards)
-        setHandTextViewText()
+
+        if (numberOfDrawsLeft == 0) {
+
+            continueButton.text = "Play again!"
+            isPlaying = false
+            setHandTextViewTextWith("Congratulations!")
+        } else {
+            continueButton.text = getString(R.string.happy_with_my_cards)
+            setHandTextViewTextWith(getString(R.string.choose_cards))
+        }
     }
 
-    fun getResIdFromString(string: String) : Int {
+    fun playAgain() {
+        numberOfDrawsLeft = numberOfDraws
+        isPlaying = true
+
+        Log.d("!!!", "${deck.cards.size}")
+
+        deck.cards.addAll(currentCards)
+        deck.cards.shuffle()
+        for (i in 0..<5) {
+            val card = deck.cards.removeFirst()
+            val imageView = imageViews[i]
+            imageView.setImageResource(getResIdFromString(card.imageText()))
+            currentCards[i] = card
+        }
+        continueButton.text = getString(R.string.happy_with_my_cards)
+        setHandTextViewTextWith(getString(R.string.choose_cards))
+
+    }
+
+
+    fun getResIdFromString(string: String): Int {
         return getResources().getIdentifier(string, "drawable", packageName)
     }
 
-    fun checkCurrentHand() : Int {
+    fun checkCurrentHand(): Int {
 
         var handValue = 0
 
 
-        val valueArray : List<Int> = intArrayOf(currentCards[0].intValue, currentCards[1].intValue, currentCards[2].intValue, currentCards[3].intValue, currentCards[4].intValue).sorted()
-        val valueSet : Set<Int> = valueArray.toSet()
+        val valueArray: List<Int> = intArrayOf(
+            currentCards[0].intValue,
+            currentCards[1].intValue,
+            currentCards[2].intValue,
+            currentCards[3].intValue,
+            currentCards[4].intValue
+        ).sorted()
+        val valueSet: Set<Int> = valueArray.toSet()
 
-        val suitArray : List<Int> = intArrayOf(currentCards[0].intSuit, currentCards[1].intSuit, currentCards[2].intSuit, currentCards[3].intSuit, currentCards[4].intSuit).sorted()
-        val suitSet : Set<Int> = suitArray.toSet()
+        val suitArray: List<Int> = intArrayOf(
+            currentCards[0].intSuit,
+            currentCards[1].intSuit,
+            currentCards[2].intSuit,
+            currentCards[3].intSuit,
+            currentCards[4].intSuit
+        ).sorted()
+        val suitSet: Set<Int> = suitArray.toSet()
 
         if (valueSet.size == 2) {
             // Four of a kind or Full House
@@ -148,7 +201,7 @@ class GameActivity : AppCompatActivity() {
             handValue = 1
         } else if (suitSet.size == 1) {
             // Flush or strait flush
-            if (valueArray[4]-valueArray[0] == 4) {
+            if (valueArray[4] - valueArray[0] == 4) {
                 // Straight flush but not highest
                 handValue = 8
             } else if (valueArray[0] == 1 && valueArray.sum() == 47) {
@@ -158,7 +211,7 @@ class GameActivity : AppCompatActivity() {
                 // Flush
                 handValue = 5
             }
-        } else if (valueArray[4]-valueArray[0] == 4) {
+        } else if (valueArray[4] - valueArray[0] == 4) {
             // Straight but not highest
             handValue = 4
         } else if (valueArray[0] == 1 && valueArray.sum() == 47) {
@@ -169,7 +222,7 @@ class GameActivity : AppCompatActivity() {
         return handValue
     }
 
-    fun handValueToString(handValue: Int) : String {
+    fun handValueToString(handValue: Int): String {
         return when (handValue) {
             0 -> "High Card"
             1 -> "a pair"
@@ -184,4 +237,6 @@ class GameActivity : AppCompatActivity() {
             else -> ""
         }
     }
+
+
 }
