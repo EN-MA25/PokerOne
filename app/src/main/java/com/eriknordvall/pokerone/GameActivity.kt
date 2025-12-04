@@ -51,7 +51,7 @@ class GameActivity : AppCompatActivity() {
         val currentCard5 = deck.cards.removeFirst()
         currentCards = arrayOf(currentCard1, currentCard2, currentCard3, currentCard4, currentCard5)
 
-        for (i in 0..<currentCards.size) {
+        for (i in currentCards.indices) {
             val resId = getResIdFromString(currentCards[i].imageText())
             imageViews[i].setImageResource(resId)
         }
@@ -92,10 +92,12 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun continueButtonPressed(button: View) {
-        for (i in 0..<currentCards.size) {
+        for (i in currentCards.indices) {
             val currentCard = currentCards[i]
 
             if (currentCard.selected) {
+                currentCard.selected = false
+                deck.cards.addLast(currentCard)
                 val card = deck.cards.removeFirst()
                 val imageView = imageViews[i]
                 imageView.setImageResource(getResIdFromString(card.imageText()))
