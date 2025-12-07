@@ -18,10 +18,11 @@ class GameActivity : AppCompatActivity() {
     lateinit var imageViews: Array<ImageView>
     lateinit var handTextView: TextView
 
-    var numberOfDrawsLeft: Int = 3
+
     var happyWithMyCards = true
     var isPlaying = true
     var numberOfDraws: Int = 3
+    var numberOfDrawsLeft: Int = 3
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,11 +54,11 @@ class GameActivity : AppCompatActivity() {
             imageViews[i].setImageResource(resId)
         }
 
-        setHandTextViewTextWith(getString(R.string.choose_cards))
+        setTextView(getString(R.string.choose_cards))
 
     }
 
-    fun setHandTextViewTextWith(text: String) {
+    fun setTextView(text: String) {
         val handValue = checkCurrentHand()
         val hand = handValueToString(handValue)
         handTextView.text = "${getString(R.string.you_got, hand)}\n$text"
@@ -78,11 +79,11 @@ class GameActivity : AppCompatActivity() {
             }
 
             var text = getString(R.string.happy_with_my_cards)
-            happyWithMyCards = true
+
             for (card in currentCards) {
                 if (card.selected) {
                     text = getString(R.string.switch_cards)
-                    happyWithMyCards = false
+
                     break
                 }
             }
@@ -101,14 +102,14 @@ class GameActivity : AppCompatActivity() {
 
     fun giveMeNewCards() {
         numberOfDrawsLeft--
-        if (happyWithMyCards) {
-            numberOfDrawsLeft = 0
-        }
+        happyWithMyCards = true
+
         for (i in currentCards.indices) {
 
             val currentCard = currentCards[i]
 
             if (currentCard.selected) {
+                happyWithMyCards = false
                 currentCard.selected = false
                 deck.cards.addLast(currentCard)
                 val card = deck.cards.removeFirst()
@@ -118,20 +119,24 @@ class GameActivity : AppCompatActivity() {
                 imageView.offsetTopAndBottom(64)
             }
         }
+        if (happyWithMyCards) {
+            numberOfDrawsLeft = 0
+        }
 
         if (numberOfDrawsLeft == 0) {
 
-            continueButton.text = "Play again!"
+            continueButton.text = getString(R.string.play_again)
             isPlaying = false
-            setHandTextViewTextWith("Congratulations!")
+            setTextView(getString(R.string.congratulations))
         } else {
             continueButton.text = getString(R.string.happy_with_my_cards)
-            setHandTextViewTextWith(getString(R.string.choose_cards))
+            setTextView(getString(R.string.choose_cards))
         }
     }
 
     fun playAgain() {
         numberOfDrawsLeft = numberOfDraws
+        happyWithMyCards = true
         isPlaying = true
 
         Log.d("!!!", "${deck.cards.size}")
@@ -145,7 +150,7 @@ class GameActivity : AppCompatActivity() {
             currentCards[i] = card
         }
         continueButton.text = getString(R.string.happy_with_my_cards)
-        setHandTextViewTextWith(getString(R.string.choose_cards))
+        setTextView(getString(R.string.choose_cards))
 
     }
 

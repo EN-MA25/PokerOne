@@ -10,4 +10,7 @@
     <string name="switch_cards">Switch Cards</string>
     <string name="you_got">You got %1$s</string>
     <string name="choose_cards">Choose the cards\nyou would like to switch</string>
+    <string name="number_of_draws">Number of draws: %1$d</string>
+    <string name="congratulations">Congratulations!</string>
+    <string name="play_again">Play again!</string>
 </resources>

@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setTextWithNumber(number: Int) {
-        numberOfTriesTextView.text = "Number of tries: $number"
+        numberOfTriesTextView.text = getString(R.string.number_of_draws, number)
     }
     fun startGame(view: View) {
         val intent = Intent(this, GameActivity::class.java)
@@ -30,8 +30,8 @@ class MainActivity : AppCompatActivity() {
 
     fun addButtonPressed(view: View) {
         numberOfDraws++
-        if (numberOfDraws >= 10) {
-            numberOfDraws = 10
+        if (numberOfDraws > 20) {
+            numberOfDraws = 20
         }
         setTextWithNumber(numberOfDraws)
     }
